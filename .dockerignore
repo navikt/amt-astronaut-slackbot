@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log
+Dockerfile
+.git
+.gitignore
+.idea
+.vscode
+coverage
+nyc_output
+.env
+.env.*
+data
+.data
+nais/*.yaml
+

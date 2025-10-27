@@ -1,0 +1,38 @@
+name: Deploy to prod-gcp
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    name: Build and deploy to prod-gcp
+    runs-on: ubuntu-latest
+    environment: prod-gcp
+    concurrency:
+      group: deploy-prod-gcp
+      cancel-in-progress: true
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and push container image
+        id: image
+        uses: nais/docker-build-push@v0
+        with:
+          team: amt
+          dockerfile: Dockerfile
+          image: ghcr.io/${{ github.repository }}
+          tag: ${{ github.sha }}
+
+      - name: Deploy to prod-gcp
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: prod-gcp
+          TEAM: amt
+          RESOURCE: .nais/app.yaml .nais/job-friday.yaml .nais/job-monday.yaml
+          VAR: image=${{ steps.image.outputs.image }}
