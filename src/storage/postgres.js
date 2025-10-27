@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const fs = require('fs');
 
 const PREFIX = 'NAIS_DATABASE_AMT_ASTRONAUT_SLACKBOT_AMT_ASTRONAUT_SLACKBOT_DB_';
 
@@ -8,29 +9,40 @@ function reqEnv(name) {
   return v;
 }
 
+function readValueOrFile(v) {
+  if (!v) return undefined;
+  // If it looks like an absolute path, read file contents
+  if (typeof v === 'string' && v.startsWith('/')) {
+    return fs.readFileSync(v, 'utf8');
+  }
+  return v;
+}
+
 function buildSslConfig(mode, { ca, cert, key }) {
   const m = (mode || '').toLowerCase();
   if (m === 'disable') return false;
 
-  // Base TLS options
-  const base = { ca, cert, key };
+  const caVal = readValueOrFile(ca);
+  const certVal = readValueOrFile(cert);
+  const keyVal = readValueOrFile(key);
 
-  // verify-full: verify CA + hostname
+  const base = {};
+  if (caVal) base.ca = caVal;
+  if (certVal) base.cert = certVal;
+  if (keyVal) base.key = keyVal;
+
   if (m === 'verify-full') {
     return { ...base, rejectUnauthorized: true };
   }
 
-  // verify-ca: verify CA only, skip hostname check
   if (m === 'verify-ca') {
     return {
       ...base,
       rejectUnauthorized: true,
-      // Skip hostname verification but keep CA validation
       checkServerIdentity: () => undefined,
     };
   }
 
-  // require/prefer/allow/etc: enable TLS without strict verification
   return { ...base, rejectUnauthorized: false };
 }
 
