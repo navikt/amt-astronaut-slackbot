@@ -1,6 +1,6 @@
 const { Pool } = require('pg');
 
-function getNaisAliasPrefix() {
+function getNaisUrl() {
   const all = Object.keys(process.env).filter((k) => /^NAIS_DATABASE_.+_URL$/.test(k));
   const urlKeys = all.filter((k) => !/_JDBC_URL$/.test(k));
   if (urlKeys.length === 0) {
@@ -9,33 +9,22 @@ function getNaisAliasPrefix() {
   if (urlKeys.length > 1) {
     throw new Error(`Multiple NAIS database URLs found (${urlKeys.join(', ')}). Ensure only one NAIS_DATABASE_<ALIAS>_URL (non-JDBC) is present.`);
   }
-  return urlKeys[0].replace(/_URL$/, '');
-}
-
-function getEnvOr(prefix, keys) {
-  for (const k of keys) {
-    const full = `${prefix}_${k}`;
-    if (process.env[full]) return process.env[full];
-  }
-  return undefined;
+  return process.env[urlKeys[0]];
 }
 
 class PostgresStorage {
   constructor() {
-    const prefix = getNaisAliasPrefix();
-    const host = getEnvOr(prefix, ['HOST']);
-    const portRaw = getEnvOr(prefix, ['PORT']);
-    const user = getEnvOr(prefix, ['USERNAME', 'USER']);
-    const password = getEnvOr(prefix, ['PASSWORD']);
-    const database = getEnvOr(prefix, ['NAME', 'DATABASE']);
-
-    if (!host || !user || !password || !database) {
-      throw new Error('Missing NAIS database connection pieces (HOST/PORT/USER/PASSWORD/NAME).');
+    const url = getNaisUrl();
+    let ssl = undefined;
+    try {
+      const u = new URL(url);
+      const host = (u.hostname || '').toLowerCase();
+      const isLocalProxy = host === 'localhost' || host === '127.0.0.1';
+      ssl = isLocalProxy ? false : { rejectUnauthorized: false };
+    } catch {
+      ssl = { rejectUnauthorized: false };
     }
-
-    const port = portRaw ? parseInt(portRaw, 10) : undefined;
-
-    this.pool = new Pool({ host, port, user, password, database, ssl: false });
+    this.pool = new Pool({ connectionString: url, ssl });
   }
 
   async init() {
