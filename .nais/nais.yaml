@@ -66,11 +66,10 @@ spec:
       memory: 64Mi
       cpu: 10m
     limits:
-      memory: 128Mi
+      memory: 256Mi
   ttlSecondsAfterFinished: 86400
   command:
     - node
-  args:
     - src/jobs/friday.js
   accessPolicy:
     outbound:
@@ -95,15 +94,14 @@ spec:
     - secret: amt-astronaut-slackbot
     - secret: google-sql-amt-astronaut-slackbot
   resources:
+    limits:
+      memory: 256Mi
     requests:
       memory: 64Mi
       cpu: 10m
-    limits:
-      memory: 128Mi
   ttlSecondsAfterFinished: 86400
   command:
     - node
-  args:
     - src/jobs/monday.js
   accessPolicy:
     outbound:
