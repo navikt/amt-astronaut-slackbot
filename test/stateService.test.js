@@ -11,8 +11,6 @@ class MemStorage {
   async setState(s) { this.state = JSON.parse(JSON.stringify(s)); return this.state; }
 }
 
-function isoDate(str) { return new Date(str).toISOString(); }
-
 test('picks next and cycles through roster then resets', async () => {
   const storage = new MemStorage();
   const service = new StateService(storage);
@@ -67,4 +65,46 @@ test('pause and resume toggles paused state', async () => {
   await service.resume();
   st = await service.getState();
   assert.equal(st.paused, false);
+});
+
+// New tiny tests
+
+test('ensureRosterFromEnv does not overwrite existing non-empty roster/remaining', async () => {
+  const storage = new MemStorage();
+  const service = new StateService(storage);
+  await service.init();
+
+  await storage.setState({ roster: ['Ada', 'Bob'], remaining: ['Bob'], current: 'Ada', paused: false, lastPickAt: null });
+
+  await service.ensureRosterFromEnv('Zed, Yara');
+  const st = await service.getState();
+  assert.deepStrictEqual(st.roster, ['Ada', 'Bob']);
+  assert.deepStrictEqual(st.remaining, ['Bob']);
+  assert.strictEqual(st.current, 'Ada');
+});
+
+test('status returns correct shape and counts', async () => {
+  const storage = new MemStorage();
+  const service = new StateService(storage);
+  await service.init();
+
+  await service.ensureRosterFromEnv('Ada, Bob, Cy');
+  const { picked } = await service.pickNextForUpcomingWeek({ envMembers: '' });
+  const st = await service.status();
+
+  assert.ok(typeof st.paused === 'boolean');
+  assert.ok(st.totalCount === 3);
+  assert.ok(st.remainingCount >= 1 && st.remainingCount <= 2);
+  assert.ok(st.current === picked || st.current === null);
+});
+
+test('pickNextForUpcomingWeek returns null when paused', async () => {
+  const storage = new MemStorage();
+  const service = new StateService(storage);
+  await service.init();
+
+  await service.ensureRosterFromEnv('Ada, Bob');
+  await service.pause();
+  const res = await service.pickNextForUpcomingWeek({ envMembers: '' });
+  assert.strictEqual(res.picked, null);
 });

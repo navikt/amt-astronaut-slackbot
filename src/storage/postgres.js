@@ -1,19 +1,19 @@
 const { Pool } = require('pg');
 
-function getSingleNaisDatabaseUrl() {
+function getNaisDatabaseUrl() {
   const keys = Object.keys(process.env).filter((k) => /^NAIS_DATABASE_.+_URL$/.test(k));
   if (keys.length === 0) {
-    throw new Error('No NAIS database URL found. Expected an env like NAIS_DATABASE_<ALIAS>_URL. Ensure gcp.sqlInstances is configured.');
+    throw new Error('No NAIS database URL found. Expected exactly one NAIS_DATABASE_<ALIAS>_URL from NAIS Cloud SQL.');
   }
   if (keys.length > 1) {
-    throw new Error(`Multiple NAIS database URLs found (${keys.join(', ')}). Define only one database in NAIS or add a selector to the app.`);
+    throw new Error(`Multiple NAIS database URLs found (${keys.join(', ')}). Define only one database in NAIS or unset extras.`);
   }
   return process.env[keys[0]];
 }
 
 class PostgresStorage {
   constructor() {
-    const url = getSingleNaisDatabaseUrl();
+    const url = getNaisDatabaseUrl();
     this.pool = new Pool({ connectionString: url, ssl: { rejectUnauthorized: false } });
   }
 

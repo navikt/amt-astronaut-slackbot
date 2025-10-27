@@ -21,11 +21,10 @@ spec:
     initialDelay: 5
   resources:
     requests:
-      cpu: 50m
+      cpu: 10m
       memory: 128Mi
     limits:
-      cpu: 200m
-      memory: 512Mi
+      memory: 256Mi
   env:
     - name: PORT
       value: "3000"
@@ -41,7 +40,7 @@ spec:
   gcp:
     sqlInstances:
       - type: POSTGRES_17
-        tier: db-f1-micro
+        tier: db-custom-1-3840
         databases:
           - name: amt-astronaut-slackbot-db
 ---
@@ -61,13 +60,13 @@ spec:
   failedJobsHistoryLimit: 3
   envFrom:
     - secret: amt-astronaut-slackbot
+    - secret: google-sql-amt-astronaut-slackbot
   resources:
-    limits:
-      memory: 256Mi
-      cpu: 500m
     requests:
       memory: 64Mi
-      cpu: 50m
+      cpu: 10m
+    limits:
+      memory: 128Mi
   ttlSecondsAfterFinished: 86400
   command:
     - node
@@ -77,12 +76,6 @@ spec:
     outbound:
       external:
         - host: slack.com
-  gcp:
-    sqlInstances:
-      - type: POSTGRES_17
-        tier: db-f1-micro
-        databases:
-          - name: amt-astronaut-slackbot-db
 ---
 apiVersion: nais.io/v1
 kind: Naisjob
@@ -100,13 +93,13 @@ spec:
   failedJobsHistoryLimit: 3
   envFrom:
     - secret: amt-astronaut-slackbot
+    - secret: google-sql-amt-astronaut-slackbot
   resources:
-    limits:
-      memory: 256Mi
-      cpu: 500m
     requests:
       memory: 64Mi
-      cpu: 50m
+      cpu: 10m
+    limits:
+      memory: 128Mi
   ttlSecondsAfterFinished: 86400
   command:
     - node
@@ -116,10 +109,3 @@ spec:
     outbound:
       external:
         - host: slack.com
-  gcp:
-    sqlInstances:
-      - type: POSTGRES_17
-        tier: db-f1-micro
-        databases:
-          - name: amt-astronaut-slackbot-db
-
