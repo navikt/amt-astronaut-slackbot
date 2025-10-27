@@ -1,30 +1,60 @@
 const { Pool } = require('pg');
 
-function getNaisUrl() {
-  const all = Object.keys(process.env).filter((k) => /^NAIS_DATABASE_.+_URL$/.test(k));
-  const urlKeys = all.filter((k) => !/_JDBC_URL$/.test(k));
-  if (urlKeys.length === 0) {
-    throw new Error('No NAIS database URL found. Expected exactly one NAIS_DATABASE_<ALIAS>_URL (non-JDBC).');
+const PREFIX = 'NAIS_DATABASE_AMT_ASTRONAUT_SLACKBOT_AMT_ASTRONAUT_SLACKBOT_DB_';
+
+function reqEnv(name) {
+  const v = process.env[name];
+  if (!v) throw new Error(`Missing required env: ${name}`);
+  return v;
+}
+
+function buildSslConfig(mode, { ca, cert, key }) {
+  const m = (mode || '').toLowerCase();
+  if (m === 'disable') return false;
+
+  // Base TLS options
+  const base = { ca, cert, key };
+
+  // verify-full: verify CA + hostname
+  if (m === 'verify-full') {
+    return { ...base, rejectUnauthorized: true };
   }
-  if (urlKeys.length > 1) {
-    throw new Error(`Multiple NAIS database URLs found (${urlKeys.join(', ')}). Ensure only one NAIS_DATABASE_<ALIAS>_URL (non-JDBC) is present.`);
+
+  // verify-ca: verify CA only, skip hostname check
+  if (m === 'verify-ca') {
+    return {
+      ...base,
+      rejectUnauthorized: true,
+      // Skip hostname verification but keep CA validation
+      checkServerIdentity: () => undefined,
+    };
   }
-  return process.env[urlKeys[0]];
+
+  // require/prefer/allow/etc: enable TLS without strict verification
+  return { ...base, rejectUnauthorized: false };
 }
 
 class PostgresStorage {
-  constructor() {
-    const url = getNaisUrl();
-    let ssl = undefined;
-    try {
-      const u = new URL(url);
-      const host = (u.hostname || '').toLowerCase();
-      const isLocalProxy = host === 'localhost' || host === '127.0.0.1';
-      ssl = isLocalProxy ? false : { rejectUnauthorized: false };
-    } catch {
-      ssl = { rejectUnauthorized: false };
-    }
-    this.pool = new Pool({ connectionString: url, ssl });
+  constructor(opts = {}) {
+    const host = reqEnv(PREFIX + 'HOST');
+    const port = Number(reqEnv(PREFIX + 'PORT'));
+    const database = reqEnv(PREFIX + 'DATABASE');
+    const user = reqEnv(PREFIX + 'USERNAME');
+    const password = reqEnv(PREFIX + 'PASSWORD');
+
+    const sslmode = process.env[PREFIX + 'SSLMODE'] || 'require';
+    const sslrootcert = process.env[PREFIX + 'SSLROOTCERT'];
+    const sslcert = process.env[PREFIX + 'SSLCERT'];
+    const sslkey = process.env[PREFIX + 'SSLKEY_PK8'] || process.env[PREFIX + 'SSLKEY'];
+
+    const ssl = buildSslConfig(sslmode, {
+      ca: sslrootcert,
+      cert: sslcert,
+      key: sslkey,
+    });
+
+    const PoolImpl = opts.Pool || Pool;
+    this.pool = new PoolImpl({ host, port, database, user, password, ssl });
   }
 
   async init() {
