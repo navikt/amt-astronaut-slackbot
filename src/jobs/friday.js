@@ -26,6 +26,6 @@ const { DEFAULT_TEAM_MEMBERS } = require('../config');
 
   await storage.close();
 })().catch((err) => {
-  console.error('Friday job failed', err);
+  console.error('Friday job failed:', err && err.message ? err.message : String(err));
   process.exit(1);
 });

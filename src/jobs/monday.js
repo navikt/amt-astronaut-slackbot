@@ -25,6 +25,6 @@ const { getSlackClient } = require('./slackClient');
 
   await storage.close();
 })().catch((err) => {
-  console.error('Monday job failed', err);
+  console.error('Monday job failed:', err && err.message ? err.message : String(err));
   process.exit(1);
 });

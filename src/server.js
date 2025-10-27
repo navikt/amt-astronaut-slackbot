@@ -4,6 +4,18 @@ const { PostgresStorage } = require('./storage/postgres');
 const { StateService } = require('./services/stateService');
 const { DEFAULT_TEAM_MEMBERS } = require('./config');
 
+process.on('unhandledRejection', (err) => {
+  const msg = err && err.message ? err.message : String(err);
+  console.error('UnhandledRejection:', msg);
+  process.exit(1);
+});
+
+process.on('uncaughtException', (err) => {
+  const msg = err && err.message ? err.message : String(err);
+  console.error('UncaughtException:', msg);
+  process.exit(1);
+});
+
 const signingSecret = getEnv('SLACK_SIGNING_SECRET', undefined, { required: true });
 const botToken = getEnv('SLACK_BOT_TOKEN', undefined, { required: true });
 const port = parseInt(getEnv('PORT', '3000'), 10);
@@ -77,11 +89,15 @@ const service = new StateService(storage);
         }
       }
     } catch (err) {
-      console.error('Command error', err);
+      console.error('Command error:', err && err.message ? err.message : String(err));
       await respond({ response_type: 'ephemeral', text: 'Noe gikk galt. Se logger.' });
     }
   });
 
   await app.start(port);
   console.log(`Slack bot server started on port ${port}`);
-})();
+})().catch((err) => {
+  const msg = err && err.message ? err.message : String(err);
+  console.error('Startup failed:', msg);
+  process.exit(1);
+});
