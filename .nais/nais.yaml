@@ -52,7 +52,8 @@ metadata:
   labels:
     team: amt
 spec:
-  schedule: "CRON_TZ=Europe/Oslo 0 13 * * FRI"
+  schedule: "0 13 * * FRI"
+  timeZone: "Europe/Oslo"
   image: {{ image }}
   concurrencyPolicy: Forbid
   backoffLimit: 1
@@ -84,7 +85,8 @@ metadata:
   labels:
     team: amt
 spec:
-  schedule: "CRON_TZ=Europe/Oslo 0 8 * * MON"
+  schedule: "0 8 * * MON"
+  timeZone: "Europe/Oslo"
   image: {{ image }}
   concurrencyPolicy: Forbid
   backoffLimit: 1
