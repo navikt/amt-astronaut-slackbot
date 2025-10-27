@@ -1,21 +1,41 @@
 const { Pool } = require('pg');
 
-function getNaisDatabaseUrl() {
+function getNaisAliasPrefix() {
   const all = Object.keys(process.env).filter((k) => /^NAIS_DATABASE_.+_URL$/.test(k));
-  const keys = all.filter((k) => !/_JDBC_URL$/.test(k));
-  if (keys.length === 0) {
-    throw new Error('No NAIS database URL found. Expected exactly one NAIS_DATABASE_<ALIAS>_URL (non-JDBC) from NAIS Cloud SQL.');
+  const urlKeys = all.filter((k) => !/_JDBC_URL$/.test(k));
+  if (urlKeys.length === 0) {
+    throw new Error('No NAIS database URL found. Expected exactly one NAIS_DATABASE_<ALIAS>_URL (non-JDBC).');
   }
-  if (keys.length > 1) {
-    throw new Error(`Multiple NAIS database URLs found (${keys.join(', ')}). Ensure only one NAIS_DATABASE_<ALIAS>_URL (non-JDBC) is present.`);
+  if (urlKeys.length > 1) {
+    throw new Error(`Multiple NAIS database URLs found (${urlKeys.join(', ')}). Ensure only one NAIS_DATABASE_<ALIAS>_URL (non-JDBC) is present.`);
   }
-  return process.env[keys[0]];
+  return urlKeys[0].replace(/_URL$/, '');
+}
+
+function getEnvOr(prefix, keys) {
+  for (const k of keys) {
+    const full = `${prefix}_${k}`;
+    if (process.env[full]) return process.env[full];
+  }
+  return undefined;
 }
 
 class PostgresStorage {
   constructor() {
-    const url = getNaisDatabaseUrl();
-    this.pool = new Pool({ connectionString: url, ssl: { rejectUnauthorized: false } });
+    const prefix = getNaisAliasPrefix();
+    const host = getEnvOr(prefix, ['HOST']);
+    const portRaw = getEnvOr(prefix, ['PORT']);
+    const user = getEnvOr(prefix, ['USERNAME', 'USER']);
+    const password = getEnvOr(prefix, ['PASSWORD']);
+    const database = getEnvOr(prefix, ['NAME', 'DATABASE']);
+
+    if (!host || !user || !password || !database) {
+      throw new Error('Missing NAIS database connection pieces (HOST/PORT/USER/PASSWORD/NAME).');
+    }
+
+    const port = portRaw ? parseInt(portRaw, 10) : undefined;
+
+    this.pool = new Pool({ host, port, user, password, database, ssl: false });
   }
 
   async init() {

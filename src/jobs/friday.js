@@ -12,14 +12,14 @@ const { DEFAULT_TEAM_MEMBERS } = require('../config');
 
   const channel = getEnv('SLACK_CHANNEL_ID', undefined, { required: true });
 
-  const { picked, state } = await service.pickNextForUpcomingWeek({ envMembers: DEFAULT_TEAM_MEMBERS.join(',') });
+  const { picked } = await service.pickNextForUpcomingWeek({ envMembers: DEFAULT_TEAM_MEMBERS.join(',') });
   if (!picked) {
     console.log('No pick (paused or no members).');
     process.exit(0);
   }
 
   const client = getSlackClient();
-  const text = fridayMessage({ name: picked, weekStartISO: state.currentWeekStart });
+  const text = fridayMessage({ name: picked });
 
   await client.chat.postMessage({ channel, text });
   console.log(`Posted Friday pick: ${picked}`);
