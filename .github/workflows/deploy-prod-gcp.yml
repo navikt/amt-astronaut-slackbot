@@ -26,7 +26,6 @@ jobs:
         with:
           team: amt
           dockerfile: Dockerfile
-          image: ghcr.io/${{ github.repository }}
           tag: ${{ github.sha }}
 
       - name: Deploy to prod-gcp
@@ -34,5 +33,5 @@ jobs:
         env:
           CLUSTER: prod-gcp
           TEAM: amt
-          RESOURCE: .nais/app.yaml .nais/job-friday.yaml .nais/job-monday.yaml
+          RESOURCE: .nais/
           VAR: image=${{ steps.image.outputs.image }}
