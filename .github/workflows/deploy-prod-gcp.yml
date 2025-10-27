@@ -33,5 +33,5 @@ jobs:
         env:
           CLUSTER: prod-gcp
           TEAM: amt
-          RESOURCE: .nais/
+          RESOURCE: .nais/nais.yaml
           VAR: image=${{ steps.image.outputs.image }}
