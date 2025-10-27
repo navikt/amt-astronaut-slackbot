@@ -1,72 +1,20 @@
 const { Pool } = require('pg');
-const fs = require('fs');
 
-const PREFIX = 'NAIS_DATABASE_AMT_ASTRONAUT_SLACKBOT_AMT_ASTRONAUT_SLACKBOT_DB_';
+const URL_ENV = 'NAIS_DATABASE_AMT_ASTRONAUT_SLACKBOT_AMT_ASTRONAUT_SLACKBOT_DB_URL';
 
-function reqEnv(name) {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing required env: ${name}`);
-  return v;
-}
-
-function readValueOrFile(v) {
-  if (!v) return undefined;
-  // If it looks like an absolute path, read file contents
-  if (typeof v === 'string' && v.startsWith('/')) {
-    return fs.readFileSync(v, 'utf8');
+function requireConnString() {
+  const url = process.env[URL_ENV] || process.env.DATABASE_URL;
+  if (!url) {
+    throw new Error(`Missing database URL. Expected ${URL_ENV} or DATABASE_URL.`);
   }
-  return v;
-}
-
-function buildSslConfig(mode, { ca, cert, key }) {
-  const m = (mode || '').toLowerCase();
-  if (m === 'disable') return false;
-
-  const caVal = readValueOrFile(ca);
-  const certVal = readValueOrFile(cert);
-  const keyVal = readValueOrFile(key);
-
-  const base = {};
-  if (caVal) base.ca = caVal;
-  if (certVal) base.cert = certVal;
-  if (keyVal) base.key = keyVal;
-
-  if (m === 'verify-full') {
-    return { ...base, rejectUnauthorized: true };
-  }
-
-  if (m === 'verify-ca') {
-    return {
-      ...base,
-      rejectUnauthorized: true,
-      checkServerIdentity: () => undefined,
-    };
-  }
-
-  return { ...base, rejectUnauthorized: false };
+  return url;
 }
 
 class PostgresStorage {
   constructor(opts = {}) {
-    const host = reqEnv(PREFIX + 'HOST');
-    const port = Number(reqEnv(PREFIX + 'PORT'));
-    const database = reqEnv(PREFIX + 'DATABASE');
-    const user = reqEnv(PREFIX + 'USERNAME');
-    const password = reqEnv(PREFIX + 'PASSWORD');
-
-    const sslmode = process.env[PREFIX + 'SSLMODE'] || 'require';
-    const sslrootcert = process.env[PREFIX + 'SSLROOTCERT'];
-    const sslcert = process.env[PREFIX + 'SSLCERT'];
-    const sslkey = process.env[PREFIX + 'SSLKEY_PK8'] || process.env[PREFIX + 'SSLKEY'];
-
-    const ssl = buildSslConfig(sslmode, {
-      ca: sslrootcert,
-      cert: sslcert,
-      key: sslkey,
-    });
-
+    const connectionString = requireConnString();
     const PoolImpl = opts.Pool || Pool;
-    this.pool = new PoolImpl({ host, port, database, user, password, ssl });
+    this.pool = new PoolImpl({ connectionString });
   }
 
   async init() {
