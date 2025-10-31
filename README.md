@@ -5,7 +5,7 @@ A tiny Slack bot that picks and announces "Ukens Astronaut" for Team Komet.
 - Picks next week's astronaut every Friday 13:00 (Europe/Oslo)
 - Reminds the channel Monday 08:00 (Europe/Oslo)
 - Supports pause/resume and override (replace current with a new pick)
-- State is persisted in a GCP bucket via NAIS (no database)
+- State is persisted in a GCP bucket via NAIS
 
 ## Configuration
 
@@ -17,11 +17,9 @@ Required secrets (Kubernetes Secret `amt-astronaut-slackbot`):
 Env:
 - `SLASH_COMMAND` (default: `/astronaut`)
 - `PORT` (default: `3000`)
-- `BUCKET_OBJECT` (default: `state.json`)
 
 Bucket:
 - The NAIS manifest provisions a GCP bucket with alias/name `amt-astronaut-bucket` and injects `NAIS_BUCKETS_AMT_ASTRONAUT_BUCKET_NAME`.
-- The app resolves the bucket name from that key; no explicit `BUCKET_NAME` is required.
 
 ## Commands
 

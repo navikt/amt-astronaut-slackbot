@@ -30,8 +30,6 @@ spec:
       value: "3000"
     - name: SLASH_COMMAND
       value: "/astronaut"
-    - name: BUCKET_OBJECT
-      value: state.json
   envFrom:
     - secret: amt-astronaut-slackbot
   accessPolicy:
@@ -60,9 +58,6 @@ spec:
   failedJobsHistoryLimit: 3
   envFrom:
     - secret: amt-astronaut-slackbot
-  env:
-    - name: BUCKET_OBJECT
-      value: state.json
   resources:
     requests:
       memory: 64Mi
@@ -98,9 +93,6 @@ spec:
   failedJobsHistoryLimit: 3
   envFrom:
     - secret: amt-astronaut-slackbot
-  env:
-    - name: BUCKET_OBJECT
-      value: state.json
   resources:
     limits:
       memory: 256Mi

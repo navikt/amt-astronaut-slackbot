@@ -1,16 +1,16 @@
 const { Storage } = require('@google-cloud/storage');
 
 class BucketStorage {
-  constructor(opts = {}) {
+  constructor() {
     const bucketName = process.env.NAIS_BUCKETS_AMT_ASTRONAUT_BUCKET_NAME;
     if (!bucketName) {
-      throw new Error('Missing NAIS_BUCKETS_AMT_ASTRONAUT_BUCKET_NAME');
+      throw new Error('Missing NAIS bucket env var NAIS_BUCKETS_AMT_ASTRONAUT_BUCKET_NAME. Ensure gcp.buckets is configured.');
     }
-    const objectName = process.env.BUCKET_OBJECT || 'state.json';
+    const objectName = 'state.json';
 
-    const StorageImpl = opts.Storage || Storage;
-    const storage = new StorageImpl();
-    this.file = storage.bucket(bucketName).file(objectName);
+    this.storage = new Storage();
+    this.bucket = this.storage.bucket(bucketName);
+    this.file = this.bucket.file(objectName);
   }
 
   static initialState() {
