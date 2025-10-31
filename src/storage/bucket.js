@@ -2,10 +2,7 @@ const { Storage } = require('@google-cloud/storage');
 
 class BucketStorage {
   constructor() {
-    const bucketName = process.env.NAIS_BUCKETS_AMT_ASTRONAUT_BUCKET_NAME;
-    if (!bucketName) {
-      throw new Error('Missing NAIS bucket env var NAIS_BUCKETS_AMT_ASTRONAUT_BUCKET_NAME. Ensure gcp.buckets is configured.');
-    }
+    const bucketName = "amt-astronaut-bucket";
     const objectName = 'state.json';
 
     this.storage = new Storage();
@@ -43,7 +40,6 @@ class BucketStorage {
     return newState;
   }
 
-  async close() {}
 }
 
 module.exports = { BucketStorage };
