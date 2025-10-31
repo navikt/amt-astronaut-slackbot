@@ -8,15 +8,6 @@ function getEnv(name, def, opts = {}) {
   return val;
 }
 
-function parseMembers(envVal) {
-  if (!envVal) return [];
-  return envVal
-    .split(',')
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
-}
-
 module.exports = {
   getEnv,
-  parseMembers,
 };

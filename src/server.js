@@ -1,6 +1,6 @@
 const { App, ExpressReceiver } = require('@slack/bolt');
 const { getEnv } = require('./utils/env');
-const { PostgresStorage } = require('./storage/postgres');
+const { BucketStorage } = require('./storage/bucket');
 const { StateService } = require('./services/stateService');
 const { DEFAULT_TEAM_MEMBERS } = require('./config');
 
@@ -23,12 +23,12 @@ const port = parseInt(getEnv('PORT', '3000'), 10);
 const receiver = new ExpressReceiver({ signingSecret });
 const app = new App({ token: botToken, receiver });
 
-const storage = new PostgresStorage();
+const storage = new BucketStorage();
 const service = new StateService(storage);
 
 (async () => {
   await service.init();
-  await service.ensureRosterFromEnv(DEFAULT_TEAM_MEMBERS.join(','));
+  await service.ensureRosterFromConfig(DEFAULT_TEAM_MEMBERS);
 
   receiver.app.get('/internal/isAlive', (_req, res) => res.status(200).send('ALIVE'));
   receiver.app.get('/internal/isReady', async (_req, res) => {
@@ -54,7 +54,7 @@ const service = new StateService(storage);
         case 'ny': {
           const { picked } = await service.replaceCurrentWithNew();
           if (!picked) {
-            await respond({ text: 'Fant ingen tilgjengelig kandidat (oppdater roster i databasen).', response_type: 'ephemeral' });
+            await respond({ text: 'Fant ingen tilgjengelig kandidat.', response_type: 'ephemeral' });
           } else {
             await respond({ text: `Ny Ukens astronaut: ${picked}`, response_type: 'ephemeral' });
           }

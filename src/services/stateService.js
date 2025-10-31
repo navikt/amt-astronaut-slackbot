@@ -1,5 +1,3 @@
-const { parseMembers } = require('../utils/env');
-
 class StateService {
   constructor(storage) {
     this.storage = storage;
@@ -9,10 +7,10 @@ class StateService {
     await this.storage.init();
   }
 
-  async ensureRosterFromEnv(envMembers) {
+  async ensureRosterFromConfig(membersArray) {
     const state = await this.storage.getState();
     if (!state.roster || state.roster.length === 0) {
-      const members = parseMembers(envMembers);
+      const members = Array.isArray(membersArray) ? membersArray : [];
       state.roster = members;
       state.remaining = [...members];
       await this.storage.setState(state);
@@ -38,8 +36,8 @@ class StateService {
     return state;
   }
 
-  async pickNextForUpcomingWeek({ envMembers }) {
-    const state = await this.ensureRosterFromEnv(envMembers);
+  async pickNextForUpcomingWeek({ members }) {
+    const state = await this.ensureRosterFromConfig(members);
     if (state.paused) return { state, picked: null };
 
     if (!state.remaining || state.remaining.length === 0) {

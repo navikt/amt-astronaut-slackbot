@@ -16,20 +16,20 @@ test('picks next and cycles through roster then resets', async () => {
   const service = new StateService(storage);
   await service.init();
 
-  await service.ensureRosterFromEnv('Ada, Bob');
-  let { picked } = await service.pickNextForUpcomingWeek({ envMembers: '' });
+  await service.ensureRosterFromConfig(['Ada', 'Bob']);
+  let { picked } = await service.pickNextForUpcomingWeek({ members: [] });
   assert.ok(['Ada', 'Bob'].includes(picked));
   const first = picked;
 
   let st = await service.getState();
   assert.equal(st.remaining.length, 1);
 
-  ({ picked } = await service.pickNextForUpcomingWeek({ envMembers: '' }));
+  ({ picked } = await service.pickNextForUpcomingWeek({ members: [] }));
   assert.ok(picked && picked !== first);
 
   st = await service.getState();
   if (st.remaining.length === 0) {
-    await service.pickNextForUpcomingWeek({ envMembers: '' });
+    await service.pickNextForUpcomingWeek({ members: [] });
     st = await service.getState();
   }
   assert.ok(st.remaining.length >= 1);
@@ -40,8 +40,8 @@ test('replaceCurrentWithNew returns current to remaining when possible', async (
   const service = new StateService(storage);
   await service.init();
 
-  await service.ensureRosterFromEnv('Ada, Bob');
-  await service.pickNextForUpcomingWeek({ envMembers: '' });
+  await service.ensureRosterFromConfig(['Ada', 'Bob']);
+  await service.pickNextForUpcomingWeek({ members: [] });
   let st = await service.getState();
   const prev = st.current;
   const prevRemainingCount = st.remaining.length;
@@ -69,14 +69,14 @@ test('pause and resume toggles paused state', async () => {
 
 // New tiny tests
 
-test('ensureRosterFromEnv does not overwrite existing non-empty roster/remaining', async () => {
+test('ensureRosterFromConfig does not overwrite existing non-empty roster/remaining', async () => {
   const storage = new MemStorage();
   const service = new StateService(storage);
   await service.init();
 
   await storage.setState({ roster: ['Ada', 'Bob'], remaining: ['Bob'], current: 'Ada', paused: false, lastPickAt: null });
 
-  await service.ensureRosterFromEnv('Zed, Yara');
+  await service.ensureRosterFromConfig(['Zed', 'Yara']);
   const st = await service.getState();
   assert.deepStrictEqual(st.roster, ['Ada', 'Bob']);
   assert.deepStrictEqual(st.remaining, ['Bob']);
@@ -88,8 +88,8 @@ test('status returns correct shape and counts', async () => {
   const service = new StateService(storage);
   await service.init();
 
-  await service.ensureRosterFromEnv('Ada, Bob, Cy');
-  const { picked } = await service.pickNextForUpcomingWeek({ envMembers: '' });
+  await service.ensureRosterFromConfig(['Ada', 'Bob', 'Cy']);
+  const { picked } = await service.pickNextForUpcomingWeek({ members: [] });
   const st = await service.status();
 
   assert.ok(typeof st.paused === 'boolean');
@@ -103,8 +103,8 @@ test('pickNextForUpcomingWeek returns null when paused', async () => {
   const service = new StateService(storage);
   await service.init();
 
-  await service.ensureRosterFromEnv('Ada, Bob');
+  await service.ensureRosterFromConfig(['Ada', 'Bob']);
   await service.pause();
-  const res = await service.pickNextForUpcomingWeek({ envMembers: '' });
+  const res = await service.pickNextForUpcomingWeek({ members: [] });
   assert.strictEqual(res.picked, null);
 });

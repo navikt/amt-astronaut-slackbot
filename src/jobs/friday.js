@@ -1,25 +1,28 @@
 const { getEnv } = require('../utils/env');
-const { PostgresStorage } = require('../storage/postgres');
+const { BucketStorage } = require('../storage/bucket');
 const { StateService } = require('../services/stateService');
-const { fridayMessage } = require('../services/messageService');
 const { getSlackClient } = require('./slackClient');
 const { DEFAULT_TEAM_MEMBERS } = require('../config');
 
+function fridayMessage(name) {
+  return `👨‍🚀 Neste ukes Astronaut er ${name} 🚀`;
+}
+
 (async () => {
-  const storage = new PostgresStorage();
+  const storage = new BucketStorage();
   const service = new StateService(storage);
   await service.init();
 
   const channel = getEnv('SLACK_CHANNEL_ID', undefined, { required: true });
 
-  const { picked } = await service.pickNextForUpcomingWeek({ envMembers: DEFAULT_TEAM_MEMBERS.join(',') });
+  const { picked } = await service.pickNextForUpcomingWeek({ members: DEFAULT_TEAM_MEMBERS });
   if (!picked) {
-    console.log('No pick (paused or no members).');
+    console.log('No pick (paused or roster empty).');
     process.exit(0);
   }
 
   const client = getSlackClient();
-  const text = fridayMessage({ name: picked });
+  const text = fridayMessage(picked);
 
   await client.chat.postMessage({ channel, text });
   console.log(`Posted Friday pick: ${picked}`);

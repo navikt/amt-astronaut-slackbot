@@ -1,11 +1,14 @@
 const { getEnv } = require('../utils/env');
-const { PostgresStorage } = require('../storage/postgres');
+const { BucketStorage } = require('../storage/bucket');
 const { StateService } = require('../services/stateService');
-const { mondayMessage } = require('../services/messageService');
 const { getSlackClient } = require('./slackClient');
 
+function mondayMessage(name) {
+  return `👨‍🚀 Denne ukens Astronaut er ${name} 🚀`;
+}
+
 (async () => {
-  const storage = new PostgresStorage();
+  const storage = new BucketStorage();
   const service = new StateService(storage);
   await service.init();
 
@@ -18,7 +21,7 @@ const { getSlackClient } = require('./slackClient');
   }
 
   const client = getSlackClient();
-  const text = mondayMessage({ name: state.current });
+  const text = mondayMessage(state.current);
 
   await client.chat.postMessage({ channel, text });
   console.log(`Posted Monday reminder: ${state.current}`);
