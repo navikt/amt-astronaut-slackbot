@@ -94,7 +94,7 @@ const service = new StateService(storage);
     }
   });
 
-  await app.start(port);
+  await receiver.start(port);
   console.log(`Slack bot server started on port ${port}`);
 })().catch((err) => {
   const msg = err && err.message ? err.message : String(err);
