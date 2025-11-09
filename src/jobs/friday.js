@@ -26,8 +26,6 @@ function fridayMessage(name) {
 
   await client.chat.postMessage({ channel, text });
   console.log(`Posted Friday pick: ${picked}`);
-
-  await storage.close();
 })().catch((err) => {
   console.error('Friday job failed:', err && err.message ? err.message : String(err));
   process.exit(1);

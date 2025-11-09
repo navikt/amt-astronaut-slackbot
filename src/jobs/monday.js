@@ -25,8 +25,6 @@ function mondayMessage(name) {
 
   await client.chat.postMessage({ channel, text });
   console.log(`Posted Monday reminder: ${state.current}`);
-
-  await storage.close();
 })().catch((err) => {
   console.error('Monday job failed:', err && err.message ? err.message : String(err));
   process.exit(1);

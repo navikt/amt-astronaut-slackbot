@@ -1,0 +1,14 @@
+{
+  "roster": [
+    "Espen",
+    "Izis",
+    "Lars",
+    "Marthe",
+    "Roar",
+    "Robert"
+  ],
+  "remaining": [],
+  "current": "Espen",
+  "paused": false,
+  "lastPickAt": "2025-11-07T13:00:11.661Z"
+}
