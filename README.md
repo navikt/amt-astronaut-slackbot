@@ -2,8 +2,8 @@
 
 En liten Slack bot som velger og annonserer "Ukens Astronaut" for Team Komet.
 
-- Velger neste ukes astronaut hver fredag kl 13:00
-- Sender en påminnelse i kanalen 08:00
+- Velger neste ukes astronaut hver fredag kl 13:00 og sender en melding i Slack-kanalen
+- Sender en påminnelse i kanalen mandag 08:00 uken etter
 - Støtter pause/start og override av nåværende astronaut
 - State blir persistert i GCP bucket
 
