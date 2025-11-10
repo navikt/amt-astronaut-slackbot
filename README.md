@@ -1,34 +1,35 @@
 # AMT Astronaut Slackbot
 
-A tiny Slack bot that picks and announces "Ukens Astronaut" for Team Komet.
+En liten Slack bot som velger og annonserer "Ukens Astronaut" for Team Komet.
 
-- Picks next week's astronaut every Friday 13:00 (Europe/Oslo)
-- Reminds the channel Monday 08:00 (Europe/Oslo)
-- Supports pause/resume and override (replace current with a new pick)
-- State is persisted in a GCP bucket via NAIS
+- Velger neste ukes astronaut hver fredag kl 13:00
+- Sender en påminnelse i kanalen 08:00
+- Støtter pause/start og override av nåværende astronaut
+- State blir persistert i GCP bucket
 
-## Configuration
+## Config
 
-Required secrets (Kubernetes Secret `amt-astronaut-slackbot`):
+Påkrevde secrets (Kubernetes Secret `amt-astronaut-slackbot`):
 - `SLACK_SIGNING_SECRET`
 - `SLACK_BOT_TOKEN`
 - `SLACK_CHANNEL_ID`
 
 Env:
-- `SLASH_COMMAND` (default: `/astronaut`)
-- `PORT` (default: `3000`)
+- `SLASH_COMMAND`: `/astronaut`
+- `PORT`: `3000`
 
 Bucket:
-- The NAIS manifest provisions a GCP bucket with alias/name `amt-astronaut-bucket` and injects `NAIS_BUCKETS_AMT_ASTRONAUT_BUCKET_NAME`.
+- Nais manifestet provisjonerer en GCP bucket med alias/navn `amt-astronaut-bucket`.
+- Se eksempel av innhold i state i `src/storage/example-state/state.json`
 
-## Commands
+## Kommandoer
 
-- `/astronaut next` – override current and pick a new astronaut
-- `/astronaut pause` – pause scheduled messages
-- `/astronaut resume` – resume scheduled messages
-- `/astronaut status` – show current state
+- `/astronaut next` – override nåværende og velger en ny astronaut.
+- `/astronaut pause` – pauser boten
+- `/astronaut resume` – starter boten igjen
+- `/astronaut status` – viser nåværende status
 
-## Run tests
+## Test
 
 ```sh
 npm test
@@ -36,4 +37,4 @@ npm test
 
 ## Deploy
 
-Push to `main` triggers GitHub Actions that build and deploy to `prod-gcp` using `nais/deploy` with `.nais/nais.yaml`.
+Push til `main` trigger GitHub Actions som bygger og deployer til `prod-gcp` ved bruk av `nais/deploy` med `.nais/nais.yaml`
