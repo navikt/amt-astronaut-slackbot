@@ -11,4 +11,4 @@ WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/src ./src
 EXPOSE 3000
-CMD ["src/server.js"]
+CMD ["node", "src/server.js"]
