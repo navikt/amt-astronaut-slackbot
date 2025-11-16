@@ -6,4 +6,4 @@ export const getEnv = (name, def, opts = {}) => {
     return undefined;
   }
   return val;
-}
+};

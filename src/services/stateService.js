@@ -36,9 +36,9 @@ export class StateService {
     return state;
   }
 
-  async pickNextForUpcomingWeek({members}) {
+  async pickNextForUpcomingWeek({ members }) {
     const state = await this.ensureRosterFromConfig(members);
-    if (state.paused) return {state, picked: null};
+    if (state.paused) return { state, picked: null };
 
     if (!state.remaining || state.remaining.length === 0) {
       state.remaining = [...state.roster];
@@ -50,12 +50,12 @@ export class StateService {
     state.current = picked;
     state.lastPickAt = new Date().toISOString();
     await this.storage.setState(state);
-    return {state, picked};
+    return { state, picked };
   }
 
   async replaceCurrentWithNew() {
     const state = await this.storage.getState();
-    if (state.paused) return {state, picked: null};
+    if (state.paused) return { state, picked: null };
 
     const prevCurrent = state.current;
 
@@ -73,11 +73,13 @@ export class StateService {
     if (!state.remaining || state.remaining.length === 0) {
       state.current = null;
       await this.storage.setState(state);
-      return {state, picked: null};
+      return { state, picked: null };
     }
 
     let candidates = state.remaining;
-    const withoutPrev = prevCurrent ? state.remaining.filter((n) => n !== prevCurrent) : state.remaining;
+    const withoutPrev = prevCurrent
+      ? state.remaining.filter((n) => n !== prevCurrent)
+      : state.remaining;
     if (withoutPrev.length > 0) {
       candidates = withoutPrev;
     }
@@ -91,7 +93,7 @@ export class StateService {
     state.current = picked;
     state.lastPickAt = new Date().toISOString();
     await this.storage.setState(state);
-    return {state, picked};
+    return { state, picked };
   }
 
   async status() {

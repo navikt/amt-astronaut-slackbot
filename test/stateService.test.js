@@ -1,14 +1,19 @@
 import assert from 'node:assert/strict';
-import {test} from 'node:test';
-import {StateService} from '../src/services/stateService.js';
+import { test } from 'node:test';
+import { StateService } from '../src/services/stateService.js';
 
 class MemStorage {
   constructor() {
-    this.state = {roster: [], remaining: [], current: null, paused: false, lastPickAt: null};
+    this.state = {
+      roster: [],
+      remaining: [],
+      current: null,
+      paused: false,
+      lastPickAt: null,
+    };
   }
 
-  async init() {
-  }
+  async init() {}
 
   async getState() {
     return this.state;
@@ -26,25 +31,25 @@ const setupStateService = async (initialState) => {
   await service.init();
   if (initialState) await storage.setState(initialState);
   return service;
-}
+};
 
 test('picks next and cycles through roster then resets', async () => {
   const service = await setupStateService();
 
   await service.ensureRosterFromConfig(['Ada', 'Bob']);
-  let {picked} = await service.pickNextForUpcomingWeek({members: []});
+  let { picked } = await service.pickNextForUpcomingWeek({ members: [] });
   assert.ok(['Ada', 'Bob'].includes(picked));
   const first = picked;
 
   let st = await service.getState();
   assert.equal(st.remaining.length, 1);
 
-  ({picked} = await service.pickNextForUpcomingWeek({members: []}));
+  ({ picked } = await service.pickNextForUpcomingWeek({ members: [] }));
   assert.ok(picked && picked !== first);
 
   st = await service.getState();
   if (st.remaining.length === 0) {
-    await service.pickNextForUpcomingWeek({members: []});
+    await service.pickNextForUpcomingWeek({ members: [] });
     st = await service.getState();
   }
   assert.ok(st.remaining.length >= 1);
@@ -54,7 +59,7 @@ test('replaceCurrentWithNew returns current to remaining when possible', async (
   const service = await setupStateService();
 
   await service.ensureRosterFromConfig(['Ada', 'Bob']);
-  await service.pickNextForUpcomingWeek({members: []});
+  await service.pickNextForUpcomingWeek({ members: [] });
   let st = await service.getState();
   const prev = st.current;
   const prevRemainingCount = st.remaining.length;
@@ -62,7 +67,10 @@ test('replaceCurrentWithNew returns current to remaining when possible', async (
   const res = await service.replaceCurrentWithNew();
   assert.ok(res.picked);
   st = await service.getState();
-  assert.ok(st.remaining.length === prevRemainingCount || st.remaining.length >= prevRemainingCount);
+  assert.ok(
+    st.remaining.length === prevRemainingCount ||
+      st.remaining.length >= prevRemainingCount,
+  );
   assert.notEqual(st.current, prev);
 });
 
@@ -86,7 +94,7 @@ test('ensureRosterFromConfig does not overwrite existing non-empty roster/remain
     remaining: ['Bob'],
     current: 'Ada',
     paused: false,
-    lastPickAt: null
+    lastPickAt: null,
   });
 
   await service.ensureRosterFromConfig(['Zed', 'Yara']);
@@ -100,7 +108,7 @@ test('status returns correct shape and counts', async () => {
   const service = await setupStateService();
 
   await service.ensureRosterFromConfig(['Ada', 'Bob', 'Cy']);
-  const {picked} = await service.pickNextForUpcomingWeek({members: []});
+  const { picked } = await service.pickNextForUpcomingWeek({ members: [] });
   const st = await service.status();
 
   assert.ok(typeof st.paused === 'boolean');
@@ -114,6 +122,6 @@ test('pickNextForUpcomingWeek returns null when paused', async () => {
 
   await service.ensureRosterFromConfig(['Ada', 'Bob']);
   await service.pause();
-  const res = await service.pickNextForUpcomingWeek({members: []});
+  const res = await service.pickNextForUpcomingWeek({ members: [] });
   assert.strictEqual(res.picked, null);
 });

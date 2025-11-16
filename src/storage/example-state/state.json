@@ -1,12 +1,5 @@
 {
-  "roster": [
-    "Espen",
-    "Izis",
-    "Lars",
-    "Marthe",
-    "Roar",
-    "Robert"
-  ],
+  "roster": ["Espen", "Izis", "Lars", "Marthe", "Roar", "Robert"],
   "remaining": [],
   "current": "Espen",
   "paused": false,

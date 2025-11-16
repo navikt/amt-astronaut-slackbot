@@ -1,7 +1,7 @@
-import {getEnv} from '../utils/env.js';
-import {BucketStorage} from '../storage/bucket.js';
-import {StateService} from '../services/stateService.js';
-import {getSlackClient} from './slackClient.js';
+import { getEnv } from '../utils/env.js';
+import { BucketStorage } from '../storage/bucket.js';
+import { StateService } from '../services/stateService.js';
+import { getSlackClient } from './slackClient.js';
 
 const mondayMessage = (name) => `👨‍🚀 Denne ukens Astronaut er ${name} 🚀`;
 
@@ -10,7 +10,7 @@ const mondayMessage = (name) => `👨‍🚀 Denne ukens Astronaut er ${name} �
   const service = new StateService(storage);
   await service.init();
 
-  const channel = getEnv('SLACK_CHANNEL_ID', undefined, {required: true});
+  const channel = getEnv('SLACK_CHANNEL_ID', undefined, { required: true });
 
   const state = await service.getState();
   if (state.paused || !state.current) {
@@ -21,9 +21,12 @@ const mondayMessage = (name) => `👨‍🚀 Denne ukens Astronaut er ${name} �
   const client = getSlackClient();
   const text = mondayMessage(state.current);
 
-  await client.chat.postMessage({channel, text});
+  await client.chat.postMessage({ channel, text });
   console.log(`Posted Monday reminder: ${state.current}`);
 })().catch((err) => {
-  console.error('Monday job failed:', err && err.message ? err.message : String(err));
+  console.error(
+    'Monday job failed:',
+    err && err.message ? err.message : String(err),
+  );
   process.exit(1);
 });
