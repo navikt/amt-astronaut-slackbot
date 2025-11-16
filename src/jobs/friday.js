@@ -6,7 +6,7 @@ import {DEFAULT_TEAM_MEMBERS} from '../config.js';
 
 const fridayMessage = (name) => `👨‍🚀 Neste ukes Astronaut er ${name} 🚀`;
 
-const main = async () => {
+(async () => {
   const storage = new BucketStorage();
   const service = new StateService(storage);
   await service.init();
@@ -16,7 +16,7 @@ const main = async () => {
   const {picked} = await service.pickNextForUpcomingWeek({members: DEFAULT_TEAM_MEMBERS});
   if (!picked) {
     console.log('No pick (paused or roster empty).');
-    return;
+    process.exit(0);
   }
 
   const client = getSlackClient();
@@ -24,9 +24,7 @@ const main = async () => {
 
   await client.chat.postMessage({channel, text});
   console.log(`Posted Friday pick: ${picked}`);
-}
-
-main().catch((err) => {
-  console.error('Friday job failed:', err?.message ?? String(err));
-  process.exitCode = 1;
+})().catch((err) => {
+  console.error('Friday job failed:', err && err.message ? err.message : String(err));
+  process.exit(1);
 });

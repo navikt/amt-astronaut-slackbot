@@ -5,7 +5,7 @@ import {getSlackClient} from './slackClient.js';
 
 const mondayMessage = (name) => `👨‍🚀 Denne ukens Astronaut er ${name} 🚀`;
 
-const main = async () => {
+(async () => {
   const storage = new BucketStorage();
   const service = new StateService(storage);
   await service.init();
@@ -15,7 +15,7 @@ const main = async () => {
   const state = await service.getState();
   if (state.paused || !state.current) {
     console.log('Skipping Monday reminder (paused or no current).');
-    return;
+    process.exit(0);
   }
 
   const client = getSlackClient();
@@ -23,9 +23,7 @@ const main = async () => {
 
   await client.chat.postMessage({channel, text});
   console.log(`Posted Monday reminder: ${state.current}`);
-}
-
-main().catch((err) => {
-  console.error('Monday job failed:', err?.message ?? String(err));
-  process.exitCode = 1;
+})().catch((err) => {
+  console.error('Monday job failed:', err && err.message ? err.message : String(err));
+  process.exit(1);
 });
