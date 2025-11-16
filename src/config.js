@@ -1,3 +1,1 @@
-module.exports = {
-  DEFAULT_TEAM_MEMBERS: ['Espen', 'Izis', 'Lars', 'Marthe', 'Roar', 'Robert'],
-};
+export const DEFAULT_TEAM_MEMBERS = ['Espen', 'Izis', 'Lars', 'Marthe', 'Roar', 'Robert']
