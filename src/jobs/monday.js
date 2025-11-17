@@ -1,11 +1,9 @@
-const { getEnv } = require('../utils/env');
-const { BucketStorage } = require('../storage/bucket');
-const { StateService } = require('../services/stateService');
-const { getSlackClient } = require('./slackClient');
+import { getEnv } from '../utils/env.js';
+import { BucketStorage } from '../storage/bucket.js';
+import { StateService } from '../services/stateService.js';
+import { getSlackClient } from './slackClient.js';
 
-function mondayMessage(name) {
-  return `👨‍🚀 Denne ukens Astronaut er ${name} 🚀`;
-}
+const mondayMessage = (name) => `👨‍🚀 Denne ukens Astronaut er ${name} 🚀`;
 
 (async () => {
   const storage = new BucketStorage();
@@ -26,6 +24,9 @@ function mondayMessage(name) {
   await client.chat.postMessage({ channel, text });
   console.log(`Posted Monday reminder: ${state.current}`);
 })().catch((err) => {
-  console.error('Monday job failed:', err && err.message ? err.message : String(err));
+  console.error(
+    'Monday job failed:',
+    err && err.message ? err.message : String(err),
+  );
   process.exit(1);
 });

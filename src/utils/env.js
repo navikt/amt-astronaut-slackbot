@@ -1,4 +1,4 @@
-function getEnv(name, def, opts = {}) {
+export const getEnv = (name, def, opts = {}) => {
   const val = process.env[name];
   if (val == null || val === '') {
     if (def !== undefined) return def;
@@ -6,8 +6,4 @@ function getEnv(name, def, opts = {}) {
     return undefined;
   }
   return val;
-}
-
-module.exports = {
-  getEnv,
 };

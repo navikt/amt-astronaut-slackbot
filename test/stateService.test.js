@@ -1,20 +1,40 @@
-const assert = require('assert');
-const test = require('node:test');
-const { StateService } = require('../src/services/stateService');
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { StateService } from '../src/services/stateService.js';
 
 class MemStorage {
   constructor() {
-    this.state = { roster: [], remaining: [], current: null, paused: false, lastPickAt: null };
+    this.state = {
+      roster: [],
+      remaining: [],
+      current: null,
+      paused: false,
+      lastPickAt: null,
+    };
   }
+
   async init() {}
-  async getState() { return this.state; }
-  async setState(s) { this.state = JSON.parse(JSON.stringify(s)); return this.state; }
+
+  async getState() {
+    return this.state;
+  }
+
+  async setState(s) {
+    this.state = JSON.parse(JSON.stringify(s));
+    return this.state;
+  }
 }
 
-test('picks next and cycles through roster then resets', async () => {
+const setupStateService = async (initialState) => {
   const storage = new MemStorage();
   const service = new StateService(storage);
   await service.init();
+  if (initialState) await storage.setState(initialState);
+  return service;
+};
+
+test('picks next and cycles through roster then resets', async () => {
+  const service = await setupStateService();
 
   await service.ensureRosterFromConfig(['Ada', 'Bob']);
   let { picked } = await service.pickNextForUpcomingWeek({ members: [] });
@@ -36,9 +56,7 @@ test('picks next and cycles through roster then resets', async () => {
 });
 
 test('replaceCurrentWithNew returns current to remaining when possible', async () => {
-  const storage = new MemStorage();
-  const service = new StateService(storage);
-  await service.init();
+  const service = await setupStateService();
 
   await service.ensureRosterFromConfig(['Ada', 'Bob']);
   await service.pickNextForUpcomingWeek({ members: [] });
@@ -49,14 +67,15 @@ test('replaceCurrentWithNew returns current to remaining when possible', async (
   const res = await service.replaceCurrentWithNew();
   assert.ok(res.picked);
   st = await service.getState();
-  assert.ok(st.remaining.length === prevRemainingCount || st.remaining.length >= prevRemainingCount);
+  assert.ok(
+    st.remaining.length === prevRemainingCount ||
+      st.remaining.length >= prevRemainingCount,
+  );
   assert.notEqual(st.current, prev);
 });
 
 test('pause and resume toggles paused state', async () => {
-  const storage = new MemStorage();
-  const service = new StateService(storage);
-  await service.init();
+  const service = await setupStateService();
 
   await service.pause();
   let st = await service.getState();
@@ -70,11 +89,13 @@ test('pause and resume toggles paused state', async () => {
 // New tiny tests
 
 test('ensureRosterFromConfig does not overwrite existing non-empty roster/remaining', async () => {
-  const storage = new MemStorage();
-  const service = new StateService(storage);
-  await service.init();
-
-  await storage.setState({ roster: ['Ada', 'Bob'], remaining: ['Bob'], current: 'Ada', paused: false, lastPickAt: null });
+  const service = await setupStateService({
+    roster: ['Ada', 'Bob'],
+    remaining: ['Bob'],
+    current: 'Ada',
+    paused: false,
+    lastPickAt: null,
+  });
 
   await service.ensureRosterFromConfig(['Zed', 'Yara']);
   const st = await service.getState();
@@ -84,9 +105,7 @@ test('ensureRosterFromConfig does not overwrite existing non-empty roster/remain
 });
 
 test('status returns correct shape and counts', async () => {
-  const storage = new MemStorage();
-  const service = new StateService(storage);
-  await service.init();
+  const service = await setupStateService();
 
   await service.ensureRosterFromConfig(['Ada', 'Bob', 'Cy']);
   const { picked } = await service.pickNextForUpcomingWeek({ members: [] });
@@ -99,9 +118,7 @@ test('status returns correct shape and counts', async () => {
 });
 
 test('pickNextForUpcomingWeek returns null when paused', async () => {
-  const storage = new MemStorage();
-  const service = new StateService(storage);
-  await service.init();
+  const service = await setupStateService();
 
   await service.ensureRosterFromConfig(['Ada', 'Bob']);
   await service.pause();

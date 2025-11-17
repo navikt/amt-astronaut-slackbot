@@ -6,7 +6,7 @@ metadata:
   labels:
     team: amt
 spec:
-  image: {{ image }}
+  image: { { image } }
   port: 3000
   ingresses:
     - https://amt-astronaut-slackbot.nav.no
@@ -27,9 +27,9 @@ spec:
       memory: 128Mi
   env:
     - name: PORT
-      value: "3000"
+      value: '3000'
     - name: SLASH_COMMAND
-      value: "/astronaut"
+      value: '/astronaut'
   envFrom:
     - secret: amt-astronaut-slackbot
   accessPolicy:
@@ -49,9 +49,9 @@ metadata:
   labels:
     team: amt
 spec:
-  schedule: "0 13 * * FRI"
-  timeZone: "Europe/Oslo"
-  image: {{ image }}
+  schedule: '0 13 * * FRI'
+  timeZone: 'Europe/Oslo'
+  image: { { image } }
   concurrencyPolicy: Forbid
   backoffLimit: 1
   successfulJobsHistoryLimit: 2
@@ -84,9 +84,9 @@ metadata:
   labels:
     team: amt
 spec:
-  schedule: "0 8 * * MON"
-  timeZone: "Europe/Oslo"
-  image: {{ image }}
+  schedule: '0 8 * * MON'
+  timeZone: 'Europe/Oslo'
+  image: { { image } }
   concurrencyPolicy: Forbid
   backoffLimit: 1
   successfulJobsHistoryLimit: 2

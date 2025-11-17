@@ -1,4 +1,4 @@
-class StateService {
+export class StateService {
   constructor(storage) {
     this.storage = storage;
   }
@@ -77,7 +77,9 @@ class StateService {
     }
 
     let candidates = state.remaining;
-    const withoutPrev = prevCurrent ? state.remaining.filter((n) => n !== prevCurrent) : state.remaining;
+    const withoutPrev = prevCurrent
+      ? state.remaining.filter((n) => n !== prevCurrent)
+      : state.remaining;
     if (withoutPrev.length > 0) {
       candidates = withoutPrev;
     }
@@ -104,5 +106,3 @@ class StateService {
     };
   }
 }
-
-module.exports = { StateService };

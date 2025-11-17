@@ -1,8 +1,8 @@
-const { Storage } = require('@google-cloud/storage');
+import { Storage } from '@google-cloud/storage';
 
-class BucketStorage {
+export class BucketStorage {
   constructor() {
-    const bucketName = "amt-astronaut-bucket";
+    const bucketName = 'amt-astronaut-bucket';
     const objectName = 'state.json';
 
     this.storage = new Storage();
@@ -11,24 +11,34 @@ class BucketStorage {
   }
 
   static initialState() {
-    return { roster: [], remaining: [], current: null, paused: false, lastPickAt: null };
+    return {
+      roster: [],
+      remaining: [],
+      current: null,
+      paused: false,
+      lastPickAt: null,
+    };
   }
 
   async init() {
     const [exists] = await this.file.exists();
     if (!exists) {
-      await this.file.save(JSON.stringify(BucketStorage.initialState()), { contentType: 'application/json' });
+      await this.file.save(JSON.stringify(BucketStorage.initialState()), {
+        contentType: 'application/json',
+      });
     }
   }
 
   async getState() {
     try {
       const [contents] = await this.file.download();
-      return JSON.parse(contents.toString('utf8'));
+      return JSON.parse(contents.toString());
     } catch (err) {
       if (err && err.code === 404) {
         const initial = BucketStorage.initialState();
-        await this.file.save(JSON.stringify(initial), { contentType: 'application/json' });
+        await this.file.save(JSON.stringify(initial), {
+          contentType: 'application/json',
+        });
         return initial;
       }
       throw err;
@@ -36,10 +46,9 @@ class BucketStorage {
   }
 
   async setState(newState) {
-    await this.file.save(JSON.stringify(newState), { contentType: 'application/json' });
+    await this.file.save(JSON.stringify(newState), {
+      contentType: 'application/json',
+    });
     return newState;
   }
-
 }
-
-module.exports = { BucketStorage };
