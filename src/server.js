@@ -1,4 +1,5 @@
-import { App, ExpressReceiver } from '@slack/bolt';
+import pkg from '@slack/bolt';
+const { App, ExpressReceiver } = pkg;
 import { getEnv } from './utils/env.js';
 import { BucketStorage } from './storage/bucket.js';
 import { StateService } from './services/stateService.js';
