@@ -6,7 +6,7 @@ metadata:
   labels:
     team: amt
 spec:
-  image: { { image } }
+  image: {{ image }}
   port: 3000
   ingresses:
     - https://amt-astronaut-slackbot.nav.no
@@ -51,7 +51,7 @@ metadata:
 spec:
   schedule: '0 13 * * FRI'
   timeZone: 'Europe/Oslo'
-  image: { { image } }
+  image: {{ image }}
   concurrencyPolicy: Forbid
   backoffLimit: 1
   successfulJobsHistoryLimit: 2
@@ -86,7 +86,7 @@ metadata:
 spec:
   schedule: '0 8 * * MON'
   timeZone: 'Europe/Oslo'
-  image: { { image } }
+  image: {{ image }}
   concurrencyPolicy: Forbid
   backoffLimit: 1
   successfulJobsHistoryLimit: 2
