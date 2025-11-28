@@ -65,8 +65,7 @@ const service = new StateService(storage);
             });
           } else {
             await respond({
-              text: `Ny Ukens astronaut: ${picked}`,
-              response_type: 'ephemeral',
+              text: `🧑‍🚀 Ny ukens astronaut: ${picked} 🚀`,
             });
           }
           break;
