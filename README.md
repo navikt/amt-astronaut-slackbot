@@ -37,4 +37,4 @@ npm test
 
 ## Deploy
 
-Push til `main` trigger GitHub Actions som bygger og deployer til `prod-gcp` ved bruk av `nais/deploy` med `.nais/nais.yaml`
+Push til `main` trigger GitHub Actions som bygger og deployer til `dev-gcp` ved bruk av `nais/deploy` med `.nais/nais.yaml`

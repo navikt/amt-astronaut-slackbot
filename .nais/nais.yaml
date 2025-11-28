@@ -9,7 +9,7 @@ spec:
   image: {{ image }}
   port: 3000
   ingresses:
-    - https://amt-astronaut-slackbot.nav.no
+    - https://amt-astronaut-slackbot.ekstern.dev.nav.no
   replicas:
     min: 1
     max: 1
