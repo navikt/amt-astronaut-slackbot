@@ -72,9 +72,6 @@ spec:
     outbound:
       external:
         - host: slack.com
-  gcp:
-    buckets:
-      - name: amt-astronaut-bucket-dev
 ---
 apiVersion: nais.io/v1
 kind: Naisjob
@@ -107,6 +104,3 @@ spec:
     outbound:
       external:
         - host: slack.com
-  gcp:
-    buckets:
-      - name: amt-astronaut-bucket-dev
