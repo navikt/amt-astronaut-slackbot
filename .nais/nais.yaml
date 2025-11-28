@@ -39,7 +39,7 @@ spec:
         - host: api.slack.com
   gcp:
     buckets:
-      - name: amt-astronaut-bucket
+      - name: amt-astronaut-bucket-dev
 ---
 apiVersion: nais.io/v1
 kind: Naisjob
@@ -74,7 +74,7 @@ spec:
         - host: slack.com
   gcp:
     buckets:
-      - name: amt-astronaut-bucket
+      - name: amt-astronaut-bucket-dev
 ---
 apiVersion: nais.io/v1
 kind: Naisjob
@@ -109,4 +109,4 @@ spec:
         - host: slack.com
   gcp:
     buckets:
-      - name: amt-astronaut-bucket
+      - name: amt-astronaut-bucket-dev

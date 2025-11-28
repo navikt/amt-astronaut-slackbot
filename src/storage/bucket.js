@@ -2,7 +2,7 @@ import { Storage } from '@google-cloud/storage';
 
 export class BucketStorage {
   constructor() {
-    const bucketName = 'amt-astronaut-bucket';
+    const bucketName = 'amt-astronaut-bucket-dev';
     const objectName = 'state.json';
 
     this.storage = new Storage();

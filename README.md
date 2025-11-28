@@ -19,7 +19,7 @@ Env:
 - `PORT`: `3000`
 
 Bucket:
-- Nais manifestet provisjonerer en GCP bucket med alias/navn `amt-astronaut-bucket`.
+- Nais manifestet provisjonerer en GCP bucket med alias/navn `amt-astronaut-bucket-dev`.
 - Se eksempel av innhold i state i `src/storage/example-state/state.json`
 
 ## Kommandoer
