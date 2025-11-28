@@ -32,5 +32,6 @@ jobs:
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
+          TEAM: amt
           RESOURCE: .nais/nais.yaml
           VAR: image=${{ steps.image.outputs.image }}
