@@ -21,10 +21,10 @@ spec:
     initialDelay: 5
   resources:
     requests:
-      cpu: 10m
-      memory: 64Mi
+      cpu: 2m
+      memory: 32Mi
     limits:
-      memory: 128Mi
+      memory: 64Mi
   env:
     - name: PORT
       value: '3000'
@@ -60,10 +60,10 @@ spec:
     - secret: amt-astronaut-slackbot
   resources:
     requests:
-      memory: 64Mi
-      cpu: 10m
+      memory: 32Mi
+      cpu: 5m
     limits:
-      memory: 256Mi
+      memory: 64Mi
   ttlSecondsAfterFinished: 86400
   command:
     - node
@@ -92,10 +92,10 @@ spec:
     - secret: amt-astronaut-slackbot
   resources:
     limits:
-      memory: 256Mi
-    requests:
       memory: 64Mi
-      cpu: 10m
+    requests:
+      memory: 32Mi
+      cpu: 5m
   ttlSecondsAfterFinished: 86400
   command:
     - node
