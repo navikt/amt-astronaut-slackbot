@@ -17,6 +17,6 @@
     "@slack/web-api": "^7.15.1"
   },
   "devDependencies": {
-    "prettier": "^3.8.2"
+    "prettier": "^3.8.3"
   }
 }
