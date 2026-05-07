@@ -4,5 +4,5 @@ export const DEFAULT_TEAM_MEMBERS = [
   'Lars',
   'Marthe',
   'Roar',
-  'Robert',
+  'Jarle',
 ];
