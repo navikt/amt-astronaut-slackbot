@@ -14,7 +14,7 @@
   "dependencies": {
     "@google-cloud/storage": "^7.19.0",
     "@slack/bolt": "^4.7.2",
-    "@slack/web-api": "^7.15.1"
+    "@slack/web-api": "^7.15.2"
   },
   "devDependencies": {
     "prettier": "^3.8.3"
