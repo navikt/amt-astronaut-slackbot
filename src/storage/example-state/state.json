@@ -1,7 +1,19 @@
 {
-  "roster": ["Espen", "Izis", "Lars", "Marthe", "Roar", "Jarle"],
-  "remaining": [],
-  "current": "Espen",
+  "roster": [
+    "Espen",
+    "Izis",
+    "Lars",
+    "Marthe",
+    "Roar",
+    "Jarle"
+  ],
+  "remaining": [
+    "Espen",
+    "Lars",
+    "Marthe",
+    "Roar"
+  ],
+  "current": "Jarle",
   "paused": false,
-  "lastPickAt": "2025-11-07T13:00:11.661Z"
+  "lastPickAt": "2026-05-29T11:00:06.567Z"
 }
