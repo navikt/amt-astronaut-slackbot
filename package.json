@@ -12,11 +12,11 @@
     "format": "prettier --write \"src/**/*\" \"test/**/*\""
   },
   "dependencies": {
-    "@google-cloud/storage": "^7.19.0",
+    "@google-cloud/storage": "^7.21.0",
     "@slack/bolt": "^4.7.3",
-    "@slack/web-api": "^7.16.0"
+    "@slack/web-api": "^7.17.0"
   },
   "devDependencies": {
-    "prettier": "^3.8.3"
+    "prettier": "^3.8.4"
   }
 }
